@@ -99,17 +99,17 @@ if st.button("🔍 Predecir riesgo de crédito", use_container_width=True, type=
         amount_invested, monthly_balance
     ]])
 
-    # 3. Escalar con MinMaxScaler (espera 19 features)
-    X_scaled = scaler.transform(X_input)
+    # 3. Seleccionar las 5 features (SelectKBest)
+    X_selected = X_input[:, SELECTED_INDICES]
 
-    # 4. Seleccionar las 5 features (SelectKBest)
-    X_selected = X_scaled[:, SELECTED_INDICES]
-
-    # 5. Reducir con PCA a 3 componentes
+    # 4. Reducir con PCA a 3 componentes
     X_pca = pca.transform(X_selected)
 
+    # 5. Escalar con MinMaxScaler (espera 3 features, después del PCA)
+    X_scaled = scaler.transform(X_pca)
+
     # 6. Predecir
-    probas    = modelo.predict(X_pca, verbose=0)[0]
+    probas    = modelo.predict(X_scaled, verbose=0)[0]
     clase     = int(np.argmax(probas))
     confianza = float(probas[clase]) * 100
 
